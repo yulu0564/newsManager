@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.yulu.mangger.dao.CommentsMapper">
+    <resultMap id="BaseResultMap" type="com.yulu.mangger.bean.Comments">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="userid" property="userid" jdbcType="INTEGER"/>
+        <result column="newsid" property="newsid" jdbcType="INTEGER"/>
+        <result column="replyid" property="replyid" jdbcType="INTEGER"/>
+        <result column="contects" property="contects" jdbcType="VARCHAR"/>
+        <result column="time" property="time" jdbcType="VARCHAR"/>
+        <result column="isdelete" property="isdelete" jdbcType="VARCHAR"/>
+        <association property="user" javaType="com.yulu.mangger.bean.User">
+            <id column="id" property="id" jdbcType="INTEGER"/>
+            <result column="username" property="username" jdbcType="VARCHAR"/>
+            <result column="nickname" property="nickname" jdbcType="VARCHAR"/>
+            <result column="head_image" property="head_image" jdbcType="VARCHAR"/>
+        </association>
+        <association property="news" javaType="com.yulu.mangger.bean.News">
+            <id column="id" property="id" jdbcType="INTEGER"/>
+            <result column="title" property="title" jdbcType="VARCHAR"/>
+            <result column="sort" property="sort" jdbcType="INTEGER"/>
+        </association>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, userid, newsid, replyid, contects, time, isdelete
+	</sql>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from comments
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from comments
+    where id = #{id,jdbcType=INTEGER}
+	</delete>
+
+    <insert id="insert" parameterType="com.yulu.mangger.bean.Comments">
+    insert into comments (id, userid, newsid, 
+      replyid, contects, time, 
+      isdelete)
+    values (#{id,jdbcType=INTEGER}, #{userid,jdbcType=INTEGER}, #{newsid,jdbcType=INTEGER}, 
+      #{replyid,jdbcType=INTEGER}, #{contects,jdbcType=VARCHAR}, #{time,jdbcType=VARCHAR}, 
+      #{isdelete,jdbcType=VARCHAR})
+	</insert>
+
+    <insert id="insertSelective" parameterType="com.yulu.mangger.bean.Comments">
+        insert into comments
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="userid != null">
+                userid,
+            </if>
+            <if test="newsid != null">
+                newsid,
+            </if>
+            <if test="replyid != null">
+                replyid,
+            </if>
+            <if test="contects != null">
+                contects,
+            </if>
+            <if test="time != null">
+                time,
+            </if>
+            <if test="isdelete != null">
+                isdelete,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="userid != null">
+                #{userid,jdbcType=INTEGER},
+            </if>
+            <if test="newsid != null">
+                #{newsid,jdbcType=INTEGER},
+            </if>
+            <if test="replyid != null">
+                #{replyid,jdbcType=INTEGER},
+            </if>
+            <if test="contects != null">
+                #{contects,jdbcType=VARCHAR},
+            </if>
+            <if test="time != null">
+                #{time,jdbcType=VARCHAR},
+            </if>
+            <if test="isdelete != null">
+                #{isdelete,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.yulu.mangger.bean.Comments">
+        update comments
+        <set>
+            <if test="userid != null">
+                userid = #{userid,jdbcType=INTEGER},
+            </if>
+            <if test="newsid != null">
+                newsid = #{newsid,jdbcType=INTEGER},
+            </if>
+            <if test="replyid != null">
+                replyid = #{replyid,jdbcType=INTEGER},
+            </if>
+            <if test="contects != null">
+                contects = #{contects,jdbcType=VARCHAR},
+            </if>
+            <if test="time != null">
+                time = #{time,jdbcType=VARCHAR},
+            </if>
+            <if test="isdelete != null">
+                isdelete = #{isdelete,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <update id="updateByPrimaryKey" parameterType="com.yulu.mangger.bean.Comments">
+    update comments
+    set userid = #{userid,jdbcType=INTEGER},
+      newsid = #{newsid,jdbcType=INTEGER},
+      replyid = #{replyid,jdbcType=INTEGER},
+      contects = #{contects,jdbcType=VARCHAR},
+      time = #{time,jdbcType=VARCHAR},
+      isdelete = #{isdelete,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+	</update>
+
+    <select id="findCommentsList" parameterType="com.yulu.mangger.bean.Comments"
+            resultMap="BaseResultMap">
+        select c.* ,u.*,n.*from comments c,user_inf u ,news n where c.isdelete=0
+        <if test="contects!=null">
+            and c.contects = '%${contects}%'
+        </if>
+        <if test="newsid!=null">
+            and c.newsid = '${newsid}'
+        </if>
+        <if test="userid!=null">
+            and c.userid = '${userid}'
+        </if>
+        and c.newsid = n.id
+        and c.userid = u.id
+        order by c.time desc , c.id desc
+    </select>
+
+    <select id="findCommentsId" parameterType="int"
+            resultMap="BaseResultMap">
+		select c.* ,u.*,n.*from comments c,user_inf u ,news n where c.isdelete=0
+			and c.id = #{id}
+			and c.newsid = n.id
+			and c.userid = u.id
+	</select>
+
+</mapper>

@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yulu.mangger.dao.NewsMapper">
+    <resultMap id="BaseResultMap" type="com.yulu.mangger.bean.News">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="title" property="title" jdbcType="VARCHAR"/>
+        <result column="sort" property="sort" jdbcType="INTEGER"/>
+        <result column="contect" property="contect" jdbcType="VARCHAR"/>
+        <result column="fromto" property="fromto" jdbcType="VARCHAR"/>
+        <result column="fromuser" property="fromuser" jdbcType="VARCHAR"/>
+        <result column="time" property="time" jdbcType="VARCHAR"/>
+        <result column="isdelete" property="isdelete" jdbcType="INTEGER"/>
+        <result column="digest" property="digest" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+		id, title, sort, contect, fromto, fromuser, time, isdelete, digest
+	</sql>
+    <sql id="Base_Column_List_not_contect">
+		id, title, sort,fromto, fromuser, time, isdelete
+	</sql>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap"
+            parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from news
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from news
+		where id = #{id,jdbcType=INTEGER}
+	</delete>
+    <insert id="insert" parameterType="com.yulu.mangger.bean.News">
+		insert into news (id, title,sort,contect, fromto, fromuser,time, isdelete,digest)
+		values
+		(#{id,jdbcType=INTEGER}, #{title,jdbcType=VARCHAR},
+		#{sort,jdbcType=INTEGER},
+		#{contect,jdbcType=VARCHAR},
+		#{fromto,jdbcType=VARCHAR}, #{fromuser,jdbcType=VARCHAR},
+		#{time,jdbcType=VARCHAR}, #{isdelete,jdbcType=INTEGER}),
+		#{digest,jdbcType=VARCHAR}
+	</insert>
+    <insert id="insertSelective" parameterType="com.yulu.mangger.bean.News">
+        insert into news
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="title != null">
+                title,
+            </if>
+            <if test="sort != null">
+                sort,
+            </if>
+            <if test="digest != null">
+                digest,
+            </if>
+            <if test="contect != null">
+                contect,
+            </if>
+            <if test="fromto != null">
+                fromto,
+            </if>
+            <if test="fromuser != null">
+                fromuser,
+            </if>
+            <if test="time != null">
+                time,
+            </if>
+            <if test="isdelete != null">
+                isdelete,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="title != null">
+                #{title,jdbcType=VARCHAR},
+            </if>
+            <if test="sort != null">
+                #{sort,jdbcType=INTEGER},
+            </if>
+            <if test="digest != null">
+                #{digest,jdbcType=VARCHAR},
+            </if>
+            <if test="contect != null">
+                #{contect,jdbcType=VARCHAR},
+            </if>
+            <if test="fromto != null">
+                #{fromto,jdbcType=VARCHAR},
+            </if>
+            <if test="fromuser != null">
+                #{fromuser,jdbcType=VARCHAR},
+            </if>
+            <if test="time != null">
+                #{time,jdbcType=VARCHAR},
+            </if>
+            <if test="isdelete != null">
+                #{isdelete,jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.yulu.mangger.bean.News">
+        update news
+        <set>
+            <if test="title != null">
+                title = #{title,jdbcType=VARCHAR},
+            </if>
+            <if test="sort != null">
+                sort = #{sort,jdbcType=INTEGER},
+            </if>
+            <if test="contect != null">
+                contect = #{contect,jdbcType=VARCHAR},
+            </if>
+            <if test="fromto != null">
+                fromto = #{fromto,jdbcType=VARCHAR},
+            </if>
+            <if test="fromuser != null">
+                fromuser = #{fromuser,jdbcType=VARCHAR},
+            </if>
+            <if test="time != null">
+                time = #{time,jdbcType=VARCHAR},
+            </if>
+            <if test="isdelete != null">
+                isdelete = #{isdelete,jdbcType=INTEGER},
+            </if>
+            <if test="digest != null">
+                digest = #{digest,jdbcType=VARCHAR},
+            </if>
+
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.yulu.mangger.bean.News">
+		update news
+		set
+		title = #{title,jdbcType=VARCHAR},
+		sort = #{sort,jdbcType=INTEGER},
+		contect = #{contect,jdbcType=VARCHAR},
+		digest = #{digest,jdbcType=VARCHAR},
+		fromto =
+		#{fromto,jdbcType=VARCHAR},
+		fromuser = #{fromuser,jdbcType=VARCHAR},
+		time = #{time,jdbcType=VARCHAR},
+		isdelete =
+		#{isdelete,jdbcType=INTEGER}
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+    <select id="findNewsList" parameterType="com.yulu.mangger.bean.News"
+            resultType="com.yulu.mangger.bean.News">
+        select
+        <include refid="Base_Column_List_not_contect"/>
+        from news
+        where isdelete=0
+        <if test="title!=null">
+            and title = '%${title}%'
+        </if>
+        <if test="sort!=null">
+            and sort = '${sort}'
+        </if>
+        order by time desc
+    </select>
+
+    <select id="findNewsSerachList" parameterType="com.yulu.mangger.bean.News"
+            resultType="com.yulu.mangger.bean.News">
+        select
+        <include refid="Base_Column_List_not_contect"/>
+        from news
+        where isdelete=0
+        <if test="title!=null">
+            and title like '%${title}%'
+        </if>
+        <if test="sort!=null">
+            and sort = '${sort}'
+        </if>
+        order by time desc
+    </select>
+
+</mapper>
